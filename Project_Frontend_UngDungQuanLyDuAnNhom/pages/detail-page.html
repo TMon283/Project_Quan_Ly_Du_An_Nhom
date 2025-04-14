@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Project Management</title>
+    <link rel="stylesheet" href="../css/detail-page.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-full">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <p>Quản Lý Dự Án</p>
+                </div>
+                <div class="header-right">
+                    <div class="unordered-list">
+                        <a href="../pages/management-page.html">Dự án</a>
+                        <a href="../pages/task-page.html">Nhiệm vụ của tôi</a>
+                        <a href="../pages/login.html">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="content">
+                <div class="content-left">
+                    <h2 class="project-name"></h2>  
+                    <p class="project-description"></p> 
+                    <button class="add-task-btn" onclick="openModal()">+ Thêm nhiệm vụ</button>
+                </div>
+                <div class="content-right">
+                    <div class="content-right-top">
+                        <h3>Thành viên</h3>
+                        <button class="add-member" onclick="openAddMemberModal()">+ Thêm thành viên</button>
+                    </div>
+                    <div class="member-section">
+                        <div class="member-avatars">
+                            <!-- Member avatars will be added here by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="content-right-bottom">
+                        <select name="filter" id="filter">
+                            <option value="0">Sắp xếp theo</option>
+                            <option value="deadline">Hạn chót</option>
+                            <option value="priority">Độ ưu tiên</option>
+                        </select>
+                        <input type="text" placeholder="Tìm kiếm nhiệm vụ">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="container-header">
+                    <h3>Danh Sách Nhiệm Vụ</h3>
+                </div>
+                <div class="task-list">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Tên Nhiệm Vụ</th>
+                                <th>Người Phụ Trách</th>
+                                <th>Ưu Tiên</th>
+                                <th>Ngày Bắt Đầu</th>
+                                <th>Hạn Chót</th>
+                                <th>Tiến độ</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dữ liệu task sẽ được thêm động bởi JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="modal-overlay" class="modal-overlay"></div>
+        <div id="task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Thêm nhiệm vụ mới</h2>
+                    <span class="close" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="task-name">Tên nhiệm vụ</label>
+                        <input type="text" id="task-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignee">Người phụ trách</label>
+                        <select id="assignee" required>
+                            <option value="">Chọn người phụ trách</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Trạng thái</label>
+                        <select id="status" required>
+                            <option value="To do">To do</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="start-date">Ngày bắt đầu</label>
+                        <input type="date" id="start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="due-date">Hạn chót</label>
+                        <input type="date" id="due-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="priority">Độ ưu tiên</label>
+                        <select id="priority" required>
+                            <option value="">Chọn độ ưu tiên</option>
+                            <option value="Cao">Cao</option>
+                            <option value="Trung bình">Trung bình</option>
+                            <option value="Thấp">Thấp</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="progress">Tiến độ</label>
+                        <select id="progress" required>
+                            <option value="">Chọn tiến độ</option>
+                            <option value="Đúng tiến độ">Đúng tiến độ</option>
+                            <option value="Có rủi ro">Có rủi ro</option>
+                            <option value="Trễ hạn">Trễ hạn</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Hủy</button>
+                    <button type="button" class="save-btn" onclick="addTask()">Lưu</button>
+                </div>
+            </div>
+        </div>
+        <div id="edit-modal" class="modal">
+            <div class="modal-header">
+                <h3>Sửa nhiệm vụ</h3>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit-task-name">Tên nhiệm vụ</label>
+                    <input type="text" id="edit-task-name" placeholder="Nhập tên nhiệm vụ">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-assignee">Người phụ trách</label>
+                    <select id="edit-assignee">
+                        <option value="">Chọn người phụ trách</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-status">Trạng thái</label>
+                    <select id="edit-status">
+                        <option value="To do">To do</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-start-date">Ngày bắt đầu</label>
+                    <input type="date" id="edit-start-date">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-due-date">Hạn chót</label>
+                    <input type="date" id="edit-due-date">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-priority">Độ ưu tiên</label>
+                    <select id="edit-priority">
+                        <option value="">Chọn độ ưu tiên</option>
+                        <option value="Thấp">Thấp</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Cao">Cao</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-progress">Tiến độ</label>
+                    <select id="edit-progress">
+                        <option value="">Chọn tiến độ</option>
+                        <option value="Đúng tiến độ">Đúng tiến độ</option>
+                        <option value="Có rủi ro">Có rủi ro</option>
+                        <option value="Trễ hạn">Trễ hạn</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeEditModal()">Hủy</button>
+                <button class="save-btn" onclick="confirmEdit()">Lưu</button>
+            </div>
+        </div>
+        <div id="delete-modal" class="delete-modal">
+            <div class="modal-header">
+                <h3>Xác nhận xóa</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa nhiệm vụ này?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeDeleteModal()">Hủy</button>
+                <button class="confirm-btn" onclick="confirmDelete()">Xóa</button>
+            </div>
+        </div>
+        <div id="add-member-modal" class="member-modal">
+            <div class="modal-header">
+                <h3>Thêm thành viên</h3>
+                <button class="close-btn" onclick="closeAddMemberModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="member-email">Email</label>
+                    <input type="email" id="member-email" placeholder="Nhập email thành viên">
+                    <p class="error-text" style="color: #DC3545; margin-top: 4px;">Thành viên đã tồn tại</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="member-role">Vai trò</label>
+                    <select id="member-role">
+                        <option value="">Chọn vai trò</option>
+                        <option value="Project owner">Project owner</option>
+                        <option value="Frontend developer">Frontend developer</option>
+                        <option value="Backend developer">Backend developer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeAddMemberModal()">Hủy</button>
+                <button class="save-btn" onclick="saveMember()">Lưu</button>
+            </div>
+        </div>
+        <div id="member-list-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Danh sách thành viên</h3>
+                    <span class="close" onclick="closeMemberListModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="member-list">
+                        <!-- Members will be added here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Quản Lý Dự Án Nhóm. All rights reserved.</p>
+        </div>
+    </div>
+    <script src="../js/detail-page.js"></script>
+</body>
+</html>

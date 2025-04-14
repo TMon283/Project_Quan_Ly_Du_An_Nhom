@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Project Management</title>
+    <link rel="stylesheet" href="../css/management-page.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-full">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <p>Quản Lý Dự Án</p>
+                </div>
+                <div class="header-right">
+                    <div class="unordered-list">
+                        <a href="../pages/management-page.html">Dự án</a>
+                        <a href="../pages/task-page.html">Nhiệm vụ của tôi</a>
+                        <a href="../pages/login.html">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="container">
+                <div class="content">
+                    <h2>Quản Lý Dự Án Nhóm</h2>
+                </div>
+                <div class="add-search">
+                    <button id="add-project-btn">+ Thêm dự án</button>
+                    <input type="text" id="find-project" placeholder="Tìm kiếm dự án">
+                </div>
+                <div class="project-list">
+                    <h3>Danh Sách Dự Án</h3>
+                    <div class="project-list-table">
+                        <table class="project-list-table">
+                            <thead>
+                                <tr>
+                                    <th class="left">ID</th>
+                                    <th class="center">Tên Dự Án</th>
+                                    <th class="right">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dữ liệu sẽ được thêm vào đây bởi JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination"></div>
+        </div>
+        <div id="project-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Thêm dự án</h2>
+                    <span class="close" id="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="project-form">
+                        <div class="form-group">
+                            <label for="project-name">Tên dự án:</label>
+                            <input type="text" id="project-name" name="projectName">
+                            <span id="project-name-error" class="error-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description">Mô tả dự án:</label>
+                            <textarea id="project-description" name="projectDescription" rows="4"></textarea>
+                            <span id="project-description-error" class="error-message"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-btn" class="cancel-btn">Hủy</button>
+                    <button id="save-project-btn" class="save-btn">Lưu</button>
+                </div>
+            </div>
+        </div>
+        <div id="delete-modal" class="modal">
+            <div class="modal-content delete">
+                <h2>Xác nhận xoá</h2>
+                <p>Bạn chắc chắn muốn xoá dự án này?</p>
+                <div class="modal-actions">
+                    <button id="cancel-delete-btn" class="cancel-btn">Huỷ</button>
+                    <button id="confirm-delete-btn" class="delete-btn">Xoá</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Team management. All rights reserved.</p>
+        </div>
+    </div>
+    <script src="../js/management-page.js"></script>
+</body>
+</html>

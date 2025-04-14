@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Project Management</title>
+    <link rel="stylesheet" href="../css/task-page.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-full">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <p>Quản Lý Dự Án</p>
+                </div>
+                <div class="header-right">
+                    <div class="unordered-list">
+                        <a href="../pages/management-page.html">Dự án</a>
+                        <a href="../pages/task-page.html">Nhiệm vụ của tôi</a>
+                        <a href="../pages/login.html">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="container">
+                <div class="container-header">
+                    <h2>Quản Lý Nhiệm Vụ</h2>
+                    <div class="filter-search">
+                        <select name="filter" id="filter">
+                            <option value="0">Sắp xếp theo</option>
+                            <option value="1">Thứ tự ưu tiên</option>
+                            <option value="2">Tiến độ công việc</option>
+                        </select>
+                        <input type="text" placeholder="Tìm kiếm nhiệm vụ">
+                    </div>
+                </div>
+                <div class="task-list">
+                    <h3>Danh Sách Nhiệm Vụ</h3>
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Tên Nhiệm Vụ</th>
+                                <th>Độ Ưu Tiên</th>
+                                <th>Trạng Thái</th>
+                                <th>Ngày Bắt Đầu</th>
+                                <th>Hạn Chót</th>
+                                <th>Tiến Độ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="show-list">
+                                <td colspan="6"><i class="fa-solid fa-caret-down"></i> Xây dựng website thương mại điện tử</td>
+                            </tr>
+                            <tr>
+                                <td class="task-name">Soạn thảo đề cương dự án</td>
+                                <td><div class="priority low">Thấp</div></td>
+                                <td><div class="condition">In progress <i class="fa-regular fa-pen-to-square"></i></div></td>
+                                <td class="time">02 - 24</td>
+                                <td class="time">02 - 27</td>
+                                <td><div class="process on-schedule">Đúng tiến độ</div></td>
+                            </tr>
+                            <tr>
+                                <td class="task-name">Soạn thảo đề cương dự án</td>
+                                <td><div class="priority medium">Trung bình</div></td>
+                                <td><div class="condition">In progress <i class="fa-regular fa-pen-to-square"></i></div></td>
+                                <td class="time">02 - 24</td>
+                                <td class="time">02 - 27</td>
+                                <td><div class="process risk">Có rủi ro</div></td>
+                            </tr>
+                            <tr>
+                                <td class="task-name">Soạn thảo đề cương dự án</td>
+                                <td><div class="priority high">Cao</div></td>
+                                <td><div class="condition">Pending <i class="fa-regular fa-pen-to-square"></i></div></td>
+                                <td class="time">02 - 24</td>
+                                <td class="time">02 - 27</td>
+                                <td><div class="process late">Trễ hạn</div></td>
+                            </tr>
+                            <tr class="show-list status">
+                                <td colspan="6"><i class="fa-solid fa-caret-down"></i> Phát triển ứng dụng di động</td>
+                            </tr>
+                            <tr>
+                                <td class="task-name">Lên lịch họp kickoff</td>
+                                <td><div class="priority low">Thấp</div></td>
+                                <td><div class="condition">In progress <i class="fa-regular fa-pen-to-square"></i></div></td>
+                                <td class="time">02 - 24</td>
+                                <td class="time">02 - 27</td>
+                                <td><div class="process risk">Có rủi ro</div></td>
+                            </tr>
+                            <tr class="show-list">
+                                <td colspan="6"><i class="fa-solid fa-caret-right"></i> Quản lý dữ liệu khách hàng</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Quản Lý Dự Án Nhóm. All rights reserved.</p>
+        </div>
+    </div>
+    <script src="../js/task-page.js"></script>
+</body>
+</html>

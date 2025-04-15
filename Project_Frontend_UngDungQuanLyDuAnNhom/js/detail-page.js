@@ -1030,16 +1030,3 @@ function checkProjectAccess() {
         window.location.href = '../pages/management-page.html';
     }
 }
-
-function renderMemberList() {
-    const members = MemberService.getProjectMembers();
-    const memberAvatars = document.querySelector('member-avatars');
-    memberAvatars.innerHTML = '';
-    const maxVisible = 2;
-    members.slice(0, maxVisible).forEach(member => {
-        if (!member || !member.name) {
-            console.warn("Invalid member:", member);
-            return;
-        }
-    })
-}

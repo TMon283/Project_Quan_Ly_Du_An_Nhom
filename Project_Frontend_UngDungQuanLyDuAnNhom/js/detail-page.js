@@ -1,4 +1,3 @@
-// Các service để quản lý dữ liệu và validation
 const StorageService = {
     getData(key) {
         return JSON.parse(localStorage.getItem(key)) || [];
@@ -124,11 +123,10 @@ function renderMemberList() {
     memberAvatars.innerHTML = '';
     
     const maxVisible = 2;
-    const visibleMembers = members.slice(0, maxVisible);
+    const visibleMembers = members.slice(1, maxVisible);
     
     visibleMembers.forEach(member => {
         if (!member || !member.name) {
-            console.warn("Dữ liệu thành viên không hợp lệ:", member);
             return;
         } 
         
@@ -773,7 +771,6 @@ function fillAssigneeSelect(selectId = 'assignee') {
     select.innerHTML = '<option value="">Chọn người phụ trách</option>';
     project.members.forEach(member => {
         if (!member || !member.userId) {
-            console.warn("Thành viên không hợp lệ:", member);
             return;
         }
         

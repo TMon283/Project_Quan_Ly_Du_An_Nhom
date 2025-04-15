@@ -111,9 +111,7 @@ const TaskFilterService = {
 };
 
 function renderMemberList() {
-    const members = MemberService.getProjectMembers();
-    console.log("Thành viên cần hiển thị:", members);
-    
+    const members = MemberService.getProjectMembers(); 
     const memberAvatars = document.querySelector('.member-avatars');
     if (!memberAvatars) {
         console.error("Không tìm thấy container thành viên");
@@ -920,7 +918,6 @@ function openMemberListModal() {
     } else {
         members.forEach(member => {
             if (!member || !member.name) {
-                console.warn("Invalid member in modal:", member);
                 return;
             }
             

@@ -24,14 +24,17 @@ const StorageService = {
 
     updateUserProjects(userId, projectId) {
         const users = this.getData('users');
-        const user = users.find(u => u.id === userId);
-        if (user) {
-            if (!user.projects) user.projects = [];
-            if (!user.projects.includes(projectId)) {
-                user.projects.push(projectId);
+        const userIndex = users.findIndex(u => u.id === userId);
+        
+        if (userIndex !== -1) {
+            users[userIndex].projects = users[userIndex].projects || [];
+            if (!users[userIndex].projects.includes(projectId)) {
+                users[userIndex].projects.push(projectId);
                 this.saveData('users', users);
+                return true;
             }
         }
+        return false;
     }
 };
 
@@ -104,20 +107,30 @@ const TaskFilterService = {
     getUserName(userId) {
         const users = StorageService.getData('users') || [];
         const user = users.find(u => u.id === parseInt(userId));
-        return user ? user.name : 'Chưa phân công';
+        return user && user.name ? user.name : 'Chưa phân công';
     }
 };
 
 function renderMemberList() {
     const members = MemberService.getProjectMembers();
+    console.log("Thành viên cần hiển thị:", members);
+    
     const memberAvatars = document.querySelector('.member-avatars');
+    if (!memberAvatars) {
+        console.error("Không tìm thấy container thành viên");
+        return;
+    }
+    
     memberAvatars.innerHTML = '';
     
     const maxVisible = 2;
     const visibleMembers = members.slice(0, maxVisible);
     
     visibleMembers.forEach(member => {
-        if (!member || !member.name) return; 
+        if (!member || !member.name) {
+            console.warn("Dữ liệu thành viên không hợp lệ:", member);
+            return;
+        } 
         
         const avatar = document.createElement('div');
         avatar.className = 'member-avatar';
@@ -125,11 +138,12 @@ function renderMemberList() {
             ${getInitials(member.name)}
             <div class="member-name-tooltip">
                 ${member.name}<br>
-                <small>${member.role || 'Thành viên'}</small>
+                <small>${member.projectRole || member.role || 'Thành viên'}</small>
             </div>
         `;
         memberAvatars.appendChild(avatar);
     });
+
     if (members.length > maxVisible) {
         const showMoreBtn = document.createElement('button');
         showMoreBtn.className = 'show-more-members';
@@ -158,16 +172,17 @@ const MemberService = {
         const users = StorageService.getData("users") || [];
             
         return project.members
-            .filter(member => member && member.userId) // Lọc bỏ thành viên undefined
+            .filter(member => member && member.userId) // Lọc thành viên hợp lệ
             .map(member => {
                 const user = users.find(u => u.id === member.userId);
-                return user ? { 
+                if (!user) return null;
+                return { 
                     ...user, 
                     role: member.role || 'Thành viên',
-                    id: member.userId
-                } : null;
+                    projectRole: member.role // Giữ lại vai trò trong dự án
+                };
             })
-            .filter(member => member !== null); // Lọc bỏ thành viên không tìm thấy user
+            .filter(member => member !== null);
     },
 
     addMember(memberData) {
@@ -175,52 +190,48 @@ const MemberService = {
         const projects = StorageService.getData("projects");
         const projectIndex = projects.findIndex(p => p.id === selectedProjectId);
         
-        if (projectIndex === -1) return false;
+        if (projectIndex === -1) return { success: false, message: "Không tìm thấy dự án" };
     
         const users = StorageService.getData("users") || [];
         let user = users.find(u => u.email === memberData.email);
     
+        // Nếu người dùng chưa tồn tại, tạo mới
         if (!user) {
-            // Tạo user mới nếu chưa tồn tại
             user = {
                 id: StorageService.generateId(users),
-                name: memberData.email.split('@')[0], // Tạo tên từ email
+                name: memberData.name || memberData.email.split('@')[0],
                 email: memberData.email,
                 projects: [selectedProjectId],
-                role: memberData.role // Thêm role vào user
+                role: 'Thành viên' // Vai trò mặc định
             };
             users.push(user);
             StorageService.saveData("users", users);
-        }
-    
-        // Thêm thành viên vào dự án
-        if (!projects[projectIndex].members) {
-            projects[projectIndex].members = [];
-        }
-    
-        // Kiểm tra nếu thành viên đã tồn tại
-        const memberExists = projects[projectIndex].members.some(m => m.userId === user.id);
-        
-        if (!memberExists) {
-            projects[projectIndex].members.push({
-                userId: user.id,
-                role: memberData.role
-            });
-            
-            // Lưu lại dữ liệu
-            StorageService.saveData("projects", projects);
-            
-            // Cập nhật danh sách dự án của user
+        } else {
+            // Cập nhật dự án của người dùng nếu chưa có
             if (!user.projects || !user.projects.includes(selectedProjectId)) {
                 user.projects = user.projects || [];
                 user.projects.push(selectedProjectId);
                 StorageService.saveData("users", users);
             }
-            
-            return true;
         }
     
-        return false;
+        // Khởi tạo mảng thành viên nếu chưa có
+        projects[projectIndex].members = projects[projectIndex].members || [];
+        
+        // Kiểm tra thành viên đã tồn tại chưa
+        const memberExists = projects[projectIndex].members.some(m => m.userId === user.id);
+        
+        if (!memberExists) {
+            projects[projectIndex].members.push({
+                userId: user.id,
+                role: memberData.role || 'Thành viên'
+            });
+            
+            StorageService.saveData("projects", projects);
+            return { success: true, message: "Thêm thành viên thành công" };
+        }
+    
+        return { success: false, message: "Thành viên đã tồn tại trong dự án" };
     },
 
     updateMemberRole(memberId, newRole) {
@@ -735,39 +746,48 @@ function saveTaskToLocalStorage(taskData) {
 
 function fillAssigneeSelect(selectId = 'assignee') {
     const select = document.getElementById(selectId);
-    if (!select) return;
+    if (!select) {
+        console.error(`Không tìm thấy phần tử select với ID ${selectId}`);
+        return;
+    }
 
     // Lấy ID dự án hiện tại
     const projectId = parseInt(localStorage.getItem("selectedProjectId"));
-    if (!projectId) return;
+    if (!projectId) {
+        console.error("Không tìm thấy ID dự án");
+        return;
+    }
 
     // Lấy dữ liệu từ localStorage
     const projects = StorageService.getData("projects") || [];
     const project = projects.find(p => p.id === projectId);
     
-    if (!project || !project.members) {
+    if (!project) {
+        console.error("Không tìm thấy dự án");
         select.innerHTML = '<option value="">Không có thành viên nào</option>';
         return;
     }
 
-    // Lấy danh sách người dùng
+    project.members = project.members || [];
     const users = StorageService.getData("users") || [];
-    
-    // Xóa các option cũ
     select.innerHTML = '<option value="">Chọn người phụ trách</option>';
-    
-    // Thêm các thành viên vào dropdown
     project.members.forEach(member => {
+        if (!member || !member.userId) {
+            console.warn("Thành viên không hợp lệ:", member);
+            return;
+        }
+        
         const user = users.find(u => u.id === member.userId);
         if (user) {
             const option = document.createElement('option');
             option.value = user.id;
             option.textContent = user.name;
             select.appendChild(option);
+        } else {
+            console.warn("Không tìm thấy người dùng cho thành viên:", member);
         }
     });
 
-    // Nếu không có thành viên nào
     if (select.options.length === 1) {
         const option = document.createElement('option');
         option.disabled = true;
@@ -777,8 +797,14 @@ function fillAssigneeSelect(selectId = 'assignee') {
 }
 
 function initializeSampleData() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) {
+        console.error("Không tìm thấy người dùng hiện tại");
+        return;
+    }
+
+    // Khởi tạo dự án nếu chưa có
     if (!localStorage.getItem('projects')) {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         const sampleProjects = [
             {
                 id: 1,
@@ -787,59 +813,61 @@ function initializeSampleData() {
                 status: "Đang thực hiện",
                 createdDate: new Date().toISOString().split('T')[0],
                 endDate: "2024-05-20",
-                creatorId: currentUser.id, // Thêm trường creatorId
+                creatorId: currentUser.id,
                 members: [
                     {
                         userId: currentUser.id,
                         role: "Project owner"
                     }
-                ]
+                ],
+                tasks: []
             }
         ];
         StorageService.saveData('projects', sampleProjects);
     }
 
+    // Khởi tạo người dùng nếu chưa có
     if (!localStorage.getItem('users')) {
         const sampleUsers = [
             {
-                id: 1,
+                id: currentUser.id,
                 name: currentUser.name,
                 email: currentUser.email,
-                role: "Project owner"
-            },
+                role: "Project owner",
+                projects: [1] 
+            }
         ];
         StorageService.saveData('users', sampleUsers);
     }
 
+    // Khởi tạo nhiệm vụ nếu chưa có
     if (!localStorage.getItem('tasks')) {
         const sampleTasks = [
             {
                 id: 1,
                 taskName: "Soạn thảo đề cương dự án",
-                assigneeId: 1,
+                assigneeId: currentUser.id,
                 projectId: 1,
                 status: "To do",
                 asignDate: "2024-02-24",
                 dueDate: "2024-02-27",
                 priority: "Trung bình",
-                progress: "Có rủi ro"
-            },
-            {
-                id: 2,
-                taskName: "Lên lịch họp kickoff",
-                assigneeId: 2,
-                projectId: 1,
-                status: "In Progress",
-                asignDate: "2024-02-24",
-                dueDate: "2024-02-27",
-                priority: "Cao",
-                progress: "Đúng tiến độ"
+                progress: "Có rủi ro",
+                createdDate: new Date().toISOString()
             }
         ];
         StorageService.saveData('tasks', sampleTasks);
+        
+        // Thêm nhiệm vụ vào dự án
+        const projects = StorageService.getData('projects');
+        const project = projects.find(p => p.id === 1);
+        if (project) {
+            project.tasks = project.tasks || [];
+            project.tasks.push(1);
+            StorageService.saveData('projects', projects);
+        }
     }
 
-    // Nếu không có selectedProjectId, set giá trị mặc định
     if (!localStorage.getItem('selectedProjectId')) {
         localStorage.setItem('selectedProjectId', '1');
     }
@@ -860,7 +888,7 @@ function fillProjectInformation() {
         const descElement = document.querySelector(".project-description");
 
         if (nameElement && descElement) {
-            console.log('Tìm thấy dự án:', currentProject); // Debug
+            console.log('Tìm thấy dự án:', currentProject); 
             nameElement.textContent = currentProject.projectName;
             descElement.textContent = currentProject.projectDescription;
         } else {
@@ -886,21 +914,32 @@ function openMemberListModal() {
     const modalBody = modal.querySelector('.modal-body');
     
     const members = MemberService.getProjectMembers();
+    console.log("Members in modal:", members); 
     
     let html = '<div class="member-list">';
-    members.forEach(member => {
-        if (!member || !member.name) return; 
-        
-        html += `
-            <div class="member-item">
-                <div class="member-avatar">${getInitials(member.name)}</div>
-                <div class="member-details">
-                    <div class="member-name">${member.name}</div>
-                    <div class="member-role">${member.role || 'Thành viên'}</div>
+    
+    if (members.length === 0) {
+        html += '<p class="no-members">Dự án chưa có thành viên nào</p>';
+    } else {
+        members.forEach(member => {
+            if (!member || !member.name) {
+                console.warn("Invalid member in modal:", member);
+                return;
+            }
+            
+            html += `
+                <div class="member-item">
+                    <div class="member-avatar">${getInitials(member.name)}</div>
+                    <div class="member-details">
+                        <div class="member-name">${member.name}</div>
+                        <div class="member-email">${member.email}</div>
+                        <div class="member-role">${member.projectRole || member.role || 'Thành viên'}</div>
+                    </div>
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    }
+    
     html += '</div>';
     
     modalBody.innerHTML = html;
@@ -922,11 +961,9 @@ function saveMember() {
         email: emailInput.value.trim(),
         role: roleInput.value
     };
-
-    // Reset thông báo lỗi
     errorText.style.display = 'none';
 
-    // Validate
+    // Validate input
     if (ValidationRules.isEmpty(memberData.email)) {
         errorText.textContent = "Email không được để trống";
         errorText.style.display = 'block';
@@ -945,17 +982,12 @@ function saveMember() {
         return;
     }
 
-    // Thêm thành viên
     if (MemberService.addMember(memberData)) {
         closeAddMemberModal();
         showSuccess("Thêm thành viên thành công");
-        
-        // Cập nhật giao diện
         renderMemberList();
-        fillAssigneeSelect(); // Cập nhật dropdown chính
-        fillAssigneeSelect('edit-assignee'); // Cập nhật dropdown trong modal sửa
-        
-        // Reset form
+        fillAssigneeSelect(); 
+        fillAssigneeSelect('edit-assignee'); 
         emailInput.value = '';
         roleInput.value = '';
     } else {
@@ -997,4 +1029,17 @@ function checkProjectAccess() {
     if (!project || !project.members.some(m => m.userId === currentUser.id)) {
         window.location.href = '../pages/management-page.html';
     }
+}
+
+function renderMemberList() {
+    const members = MemberService.getProjectMembers();
+    const memberAvatars = document.querySelector('member-avatars');
+    memberAvatars.innerHTML = '';
+    const maxVisible = 2;
+    members.slice(0, maxVisible).forEach(member => {
+        if (!member || !member.name) {
+            console.warn("Invalid member:", member);
+            return;
+        }
+    })
 }

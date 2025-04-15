@@ -121,7 +121,7 @@ function renderMemberList() {
     memberAvatars.innerHTML = '';
     
     const maxVisible = 2;
-    const visibleMembers = members.slice(1, maxVisible);
+    const visibleMembers = members.slice(0, maxVisible);
     
     visibleMembers.forEach(member => {
         if (!member || !member.name) {
@@ -147,14 +147,6 @@ function renderMemberList() {
         showMoreBtn.onclick = openMemberListModal;
         memberAvatars.appendChild(showMoreBtn);
     }
-}
-
-function getInitials(name) {
-    if (!name) return '';
-    const parts = name.split(' ');
-    return parts.length > 1 
-        ? `${parts[0][0]}${parts[parts.length-1][0]}`.toUpperCase()
-        : parts[0][0].toUpperCase();
 }
 
 const MemberService = {
@@ -311,7 +303,6 @@ const TaskService = {
     }
 };
 
-// Các hàm xử lý UI
 function showErrors(errors) {
     const errorContainer = document.createElement('div');
     errorContainer.className = 'error-container';
@@ -505,7 +496,6 @@ document.getElementById('filter').addEventListener('change', () => {
     renderTaskList();
 });
 
-// Các hàm tiện ích
 function formatDate(dateString) {
     const date = new Date(dateString);
     return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -719,14 +709,12 @@ function addStatusHeaderListeners() {
                 isExpanded ? 'fa-caret-right' : 'fa-caret-down'
             );
 
-            // Toggle tasks visibility
             let nextElement = this.nextElementSibling;
             while (nextElement && !nextElement.classList.contains('show-list')) {
                 nextElement.style.display = isExpanded ? 'none' : 'table-row';
                 nextElement = nextElement.nextElementSibling;
             }
 
-            // Save state
             localStorage.setItem(`expanded_${status}`, !isExpanded);
         });
     });
@@ -776,7 +764,7 @@ function fillAssigneeSelect(selectId = 'assignee') {
         if (user) {
             const option = document.createElement('option');
             option.value = user.id;
-            option.textContent = user.name;
+            option.textContent = user.name; 
             select.appendChild(option);
         } else {
             console.warn("Không tìm thấy người dùng cho thành viên:", member);

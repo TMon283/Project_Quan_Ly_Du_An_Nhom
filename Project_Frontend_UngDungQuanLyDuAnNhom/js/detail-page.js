@@ -106,7 +106,7 @@ const TaskFilterService = {
     getUserName(userId) {
         const users = StorageService.getData('users') || [];
         const user = users.find(u => u.id === parseInt(userId));
-        return user && user.name ? user.name : 'Chưa phân công';
+        return user && user.fullname ? user.fullname : 'Chưa phân công';
     }
 };
 
@@ -124,16 +124,16 @@ function renderMemberList() {
     const visibleMembers = members.slice(0, maxVisible);
     
     visibleMembers.forEach(member => {
-        if (!member || !member.name) {
+        if (!member || !member.fullname) {
             return;
         } 
         
         const avatar = document.createElement('div');
         avatar.className = 'member-avatar';
         avatar.innerHTML = `
-            ${getInitials(member.name)}
+            ${getInitials(member.fullname)}
             <div class="member-name-tooltip">
-                ${member.name}<br>
+                ${member.fullname}<br>
                 <small>${member.projectRole || member.role || 'Thành viên'}</small>
             </div>
         `;
@@ -764,7 +764,7 @@ function fillAssigneeSelect(selectId = 'assignee') {
         if (user) {
             const option = document.createElement('option');
             option.value = user.id;
-            option.textContent = user.name; 
+            option.textContent = user.fullname; 
             select.appendChild(option);
         } else {
             console.warn("Không tìm thấy người dùng cho thành viên:", member);
@@ -814,7 +814,7 @@ function initializeSampleData() {
         const sampleUsers = [
             {
                 id: currentUser.id,
-                name: currentUser.name,
+                fullname: currentUser.fullname,
                 email: currentUser.email,
                 role: "Project owner",
                 projects: [1] 
@@ -905,15 +905,15 @@ function openMemberListModal() {
         html += '<p class="no-members">Dự án chưa có thành viên nào</p>';
     } else {
         members.forEach(member => {
-            if (!member || !member.name) {
+            if (!member || !member.fullname) {
                 return;
             }
             
             html += `
                 <div class="member-item">
-                    <div class="member-avatar">${getInitials(member.name)}</div>
+                    <div class="member-avatar">${getInitials(member.fullname)}</div>
                     <div class="member-details">
-                        <div class="member-name">${member.name}</div>
+                        <div class="member-name">${member.fullname}</div>
                         <div class="member-email">${member.email}</div>
                         <div class="member-role">${member.projectRole || member.role || 'Thành viên'}</div>
                     </div>
@@ -979,9 +979,9 @@ function saveMember() {
 }
 
 // Thêm hàm để lấy chữ cái đầu
-function getInitials(name) {
-    if (!name) return '';
-    const words = name.trim().split(' ');
+function getInitials(fullname) {
+    if (!fullname) return '';
+    const words = fullname.trim().split(' ');
     if (words.length === 1) return words[0][0].toUpperCase();
     return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
